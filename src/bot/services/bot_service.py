@@ -6,15 +6,16 @@ from src.bot.entity.Chat import Chat
 
 
 def handle_hook_event(data: dict):
-    user, chat, message = create_entities(data)
+    user, chat, message = create_entities_by_event(data)
+
     send_message(message)
 
 
-def create_entities(data: dict) -> set:
-    message_data = data["message"]
-    user = User(**message_data["from"])
-    chat = Chat(message_data["chat"]["id"], message_data["chat"]["type"], user)
-    message = Message(message_data["message_id"], user, chat)
+def create_entities_by_event(data: dict) -> set:
+    message_data = data['message']
+    user = User(**message_data['from'])
+    chat = Chat(message_data['chat']['id'], message_data['chat']['type'], user)
+    message = Message(message_data['message_id'], user, chat, message_data['date'], message_data['text'])
 
     return user, chat, message
 
@@ -23,9 +24,13 @@ def send_message(received_message: Message):
     r = requests.post(
         f"{bot_enum.API_TELEGRAM_FULL_URL}/{bot_enum.SEND_MESSAGE_METHOD}",
         {
-            "chat_id": received_message.chat.get_id(),
-            "text": f"Hey, {received_message.user.get_first_name()}!",
+            'chat_id': received_message.chat.get_id(),
+            'text': f"Hey, {received_message.user.get_first_name()}!",
         }
     )
 
-    print(r.text)
+
+def get_info() -> str:
+    r = requests.get(f"{bot_enum.API_TELEGRAM_FULL_URL}/{bot_enum.GET_ME_METHOD}")
+
+    return r.text

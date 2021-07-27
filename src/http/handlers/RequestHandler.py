@@ -1,5 +1,4 @@
 import http.server
-import ast
 import json
 from src.bot.services.bot_service import handle_hook_event
 from http import HTTPStatus
