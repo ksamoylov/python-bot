@@ -1,7 +1,7 @@
 from html2image import Html2Image
 
-DEFAULT_IMAGE_HEIGHT = 500
-DEFAULT_IMAGE_WIDTH = 500
+DEFAULT_IMAGE_HEIGHT = 840
+DEFAULT_IMAGE_WIDTH = 480
 
 
 def create_image(html: str, css: str, filename: str) -> str:

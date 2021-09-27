@@ -10,13 +10,18 @@ from src.image.services.image_service import create_image
 
 def handle_hook_event(data: dict):
     user, chat, message = create_entities_by_event(data)
-    
-    etfs = scrap_page(get_uri_by_page(1))
-    html, css = to_html(etfs)
-    
-    file_name = create_image(html, css, 'file.png')
-    send_photo(message, open(file_name, 'rb'))
+    page = message.text
 
+    try:
+        int(page)
+        etfs = scrap_page(get_uri_by_page(page))
+        html, css = to_html(etfs, page)
+
+        file_name = create_image(html, css, 'file.png')
+        send_photo(message, open(file_name, 'rb'))
+    except ValueError:
+        send_message(message, 'Необходимо ввести номер страницы')
+    
 
 def create_entities_by_event(data: dict) -> set:
     message_data = data['message']
