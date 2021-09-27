@@ -2,22 +2,43 @@ import mechanicalsoup
 from src.helpers.environment_helper import get_env_by_name
 from src.etf.entity.Etf import Etf
 
+LIMIT = 10
 
-def scrap_page(uri: str):
+
+def scrap_page(uri: str) -> list:
     soup = get_soup(uri)
-    get_fields_from_soup(soup)
+    
+    return get_etfs(soup)
+    
+    
+def get_uri_by_page(page: int) -> str:
+    return f"{get_env_by_name('etf_url')}/?page={page}"
 
 
 def get_soup(uri: str):
     browser = mechanicalsoup.Browser()
     page = browser.get(uri)
-
+    
     return page.soup
 
 
-def get_fields_from_soup(soup):
-    etf = create_etf(soup.select(".field_scroll_1")[0])
-    print(etf.get_fund_comp_name())
+def get_etfs(soup):
+    etf_elements = get_etf_elements(soup)
+    etfs = []
+    
+    for etf_element in etf_elements:
+        etfs.append(create_etf(etf_element))
+    
+    return etfs
+
+
+def get_etf_elements(soup) -> list:
+    etf_elements = []
+    
+    for i in range(1, LIMIT + 1):
+        etf_elements.append(soup.select(f".field_scroll_{i}")[0])
+    
+    return etf_elements
 
 
 def create_etf(etf_element) -> Etf:
